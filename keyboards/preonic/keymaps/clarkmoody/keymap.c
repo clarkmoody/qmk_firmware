@@ -17,10 +17,14 @@
 #include QMK_KEYBOARD_H
 #include "muse.h"
 
-#define W_SWP G(KC_GRV)
+// Cycle between windows, MacOS
+#define W_CYC G(KC_GRV)
+// Activate command layer
+#define MO_CMD LM(_CMD, MOD_LGUI)
 
 enum preonic_layers {
   _COLEMAK,
+  _CMD, // +Command Mod layer with tweaks
   _QWERTY,
   _LWR, // Lower
   _RSE, // Raise
@@ -75,7 +79,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
  * |------+------+------+------+------+------|------+------+------+------+------+------|
  * | Shift|   Z  |   X  |   C  |   D  |   V  |   K  |   H  |   ,  |   .  |   /  |Sh/Ent|
  * |------+------+------+------+------+------+------+------+------+------+------+------|
- * | Ctrl |  Alt | GUI  |      |>LOWER|    Space    |>RAISE| Left | Down |  Up  | Rght |
+ * | Ctrl |  Alt | MENU | GUI  |>LOWER|    Space    | >CMD | Left | Down |  Up  | Rght |
  * `-----------------------------------------------------------------------------------'
  */
 [_COLEMAK] = LAYOUT_preonic_1x2uC(
@@ -83,7 +87,28 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
   KC_TAB,  KC_Q,    KC_W,    KC_F,    KC_P,    KC_B,    KC_J,    KC_L,    KC_U,    KC_Y,    KC_SCLN, KC_DEL,
   KC_BSLS, KC_A,    KC_R,    KC_S,    KC_T,    KC_G,    KC_M,    KC_N,    KC_E,    KC_I,    KC_O,    KC_QUOT,
   KC_LSFT, KC_Z,    KC_X,    KC_C,    KC_D,    KC_V,    KC_K,    KC_H,    KC_COMM, KC_DOT,  KC_SLSH, KC_SFTENT,
-  KC_LCTL, KC_LALT, KC_LGUI, XXXXXXX, MO(_LWR),      KC_SPC,     MO(_RSE),KC_LEFT, KC_DOWN, KC_UP,   KC_RGHT
+  KC_LCTL, KC_LALT, KC_APP,  KC_LGUI, MO(_LWR),      KC_SPC,     MO_CMD,  KC_LEFT, KC_DOWN, KC_UP,   KC_RGHT
+),
+
+/* Command layer: Cmd mod key fallthroughs with some tweaks
+ * ,-----------------------------------------------------------------------------------.
+ * |   `  |      |      |      |      |      |      |      |      |      |      |      |
+ * |------+------+------+------+------+------+------+------+------+------+------+------|
+ * |      |      |      |      |      |      |      |      |      |      |      |      |
+ * |------+------+------+------+------+-------------+------+------+------+------+------|
+ * | CAPS |      |      |      |      |      |      |      |      |      |      |      |
+ * |------+------+------+------+------+------|------+------+------+------+------+------|
+ * |      |      |      |      |      |      |      |      |      |      |      |      |
+ * |------+------+------+------+------+------+------+------+------+------+------+------|
+ * |      |      |      |      | >ADJ |             |      |      |      |      |      |
+ * `-----------------------------------------------------------------------------------'
+ */
+[_CMD] = LAYOUT_preonic_1x2uC(
+  KC_GRV,  _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______,
+  _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______,
+  KC_CAPS, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______,
+  _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______,
+  _______, _______, _______, _______, MO(_ADJ),     _______,     _______, _______, _______, _______, _______
 ),
 
 /* Qwerty
@@ -142,7 +167,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
  * `-----------------------------------------------------------------------------------'
  */
 [_RSE] = LAYOUT_preonic_1x2uC(
-  W_SWP,   KC_F11,  KC_F12,  KC_F13,  KC_F14,  KC_F15,  KC_F16,  KC_F17,  KC_F18,  KC_F19,  KC_F20,  _______,
+  W_CYC,   KC_F11,  KC_F12,  KC_F13,  KC_F14,  KC_F15,  KC_F16,  KC_F17,  KC_F18,  KC_F19,  KC_F20,  _______,
   XXXXXXX, KC_UNDS, KC_PLUS, KC_LCBR, KC_RCBR, XXXXXXX, KC_EXLM, KC_AT,   KC_HASH, KC_DLR,  KC_PERC, _______,
   KC_CAPS, KC_MINS, KC_EQL,  KC_LBRC, KC_RBRC, XXXXXXX, KC_CIRC, KC_AMPR, KC_ASTR, KC_LPRN, KC_RPRN, XXXXXXX,
   _______, KC_GRV,  KC_TILD, KC_LPRN, KC_RPRN, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, KC_PIPE, KC_BSLS, _______,
@@ -151,7 +176,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 
 /* Adjust & Media (Lower + Raise)
  * ,-----------------------------------------------------------------------------------.
- * |Reset |      |      |      |      |      |      |      |      |      |      |Debug |
+ * |Reset | F11  | F12  | F13  | F14  | F15  | F16  | F17  | F18  | F19  | F20  |Debug |
  * |------+------+------+------+------+------+------+------+------+------+------+------|
  * |      |      |      |      |      |      |      |      | Prev | Next |      |      |
  * |------+------+------+------+------+-------------+------+------+------+------+------|
@@ -163,7 +188,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
  * `-----------------------------------------------------------------------------------'
  */
 [_ADJ] = LAYOUT_preonic_1x2uC(
-  RESET,   XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, DEBUG,
+  RESET,   KC_F11,  KC_F12,  KC_F13,  KC_F14,  KC_F15,  KC_F16,  KC_F17,  KC_F18,  KC_F19,  KC_F20,  DEBUG,
   XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, KC_MPRV, KC_MNXT, XXXXXXX, XXXXXXX,
   XXXXXXX, XXXXXXX, XXXXXXX, QWERTY,  COLEMAK, AG_NORM, AU_TOG,  KC_MPLY, KC_VOLD, KC_VOLU, KC_MUTE, XXXXXXX,
   XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, AG_SWAP, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX,
@@ -180,7 +205,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
  * |------+------+------+------+------+------|------+------+------+------+------+------|
  * | Shift|      |      |      |      |      |      | BTN1 | BTN2 | BTN3 | BTN4 |      |
  * |------+------+------+------+------+------+------+------+------+------+------+------|
- * | Ctrl |  Alt | GUI  |      |>LOWER|   Mouse 1   |>RAISE|      |      |      |      |
+ * | Ctrl |  Alt | GUI  |      |>LOWER|   Mouse 1   | >CMD | M LF | M DN | M UP | M RT |
  * `-----------------------------------------------------------------------------------'
  */
 [_MSE] = LAYOUT_preonic_1x2uC(
@@ -188,7 +213,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
   XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, KC_WH_L, KC_WH_D, KC_WH_U, KC_WH_R, XXXXXXX,
   XXXXXXX, XXXXXXX, KC_ACL0, KC_ACL1, KC_ACL2, XXXXXXX, XXXXXXX, KC_MS_L, KC_MS_D, KC_MS_U, KC_MS_R, XXXXXXX,
   KC_LSFT, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, KC_BTN1, KC_BTN2, KC_BTN3, KC_BTN4, XXXXXXX,
-  KC_LCTL, KC_LALT, KC_LGUI, XXXXXXX, TG(_MSE),     KC_BTN1,     TG(_MSE),XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX
+  KC_LCTL, KC_LALT, KC_LGUI, XXXXXXX, TG(_MSE),     KC_BTN1,     TG(_MSE),KC_MS_L, KC_MS_D, KC_MS_U, KC_MS_R
 ),
 
 /* Lighting
@@ -201,7 +226,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
  * |------+------+------+------+------+------|------+------+------+------+------+------|
  * |      | Eff- | Bri- | Sat- | Hue- |      |      | BL-  | Brth |      |      |      |
  * |------+------+------+------+------+------+------+------+------+------+------+------|
- * |      |      |      |      |>LOWER|             |>RAISE|      |      |      |      |
+ * |      |      |      |      |>LOWER|             | >CMD |      |      |      |      |
  * `-----------------------------------------------------------------------------------'
  */
 [_LGT] = LAYOUT_preonic_1x2uC(
@@ -214,23 +239,29 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 
 };
 
+uint8_t mod_state;
 bool process_record_user(uint16_t keycode, keyrecord_t *record) {
+  mod_state = get_mods();
+
+  // Remove Cmd hold if we've made it to ADJ layer
+  if (layer_state_is(_ADJ)) {
+    unregister_mods(MOD_MASK_GUI);
+  }
+
   switch (keycode) {
-        case COLEMAK:
-          if (record->event.pressed) {
-            set_single_persistent_default_layer(_COLEMAK);
-          }
-          return false;
-          break;
-        case QWERTY:
-          if (record->event.pressed) {
-            set_single_persistent_default_layer(_QWERTY);
-          }
-          return false;
-          break;
+    case COLEMAK:
+      if (record->event.pressed) {
+        set_single_persistent_default_layer(_COLEMAK);
       }
-    return true;
-};
+      return false;
+    case QWERTY:
+      if (record->event.pressed) {
+        set_single_persistent_default_layer(_QWERTY);
+      }
+      return false;
+  }
+  return true;
+}
 
 bool muse_mode = false;
 uint8_t last_muse_note = 0;
